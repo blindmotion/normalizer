@@ -7,7 +7,7 @@ A library that normalizes sensors values as recording device is always in the sa
 Currently normalizer accepts only file with data, which format is described [here](https://github.com/blindmotion/docs/wiki/Csv-file-format). But its code can be easily changed to handle online incoming data.
 
 ## Output format
-Output format differs from input format, normilizer outputs file with lines formatted like:
+Output format differs from input format, normalizer outputs file with lines formatted like:
 ```
 <type>;<seconds>;<x>;<y>;<z>
 ```
