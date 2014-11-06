@@ -63,7 +63,7 @@ void write_data(string const &filename,
         list const &tg, list const &xg, list const &yg, list const &zg) {
     ofstream output(filename);
     output << setprecision(11);
-    for (int i = 0, j = 0; i < ta.size() || j < tg.size(); ) {
+    for (int i = 0, j = 0; i < ta.size() || j < tg.size();) {
         if (j == tg.size() || i < ta.size() && ta[i] <= tg[j]) {
             output << "1;" << ta[i] << ';' << xa[i] << ';' << ya[i] << ';' << za[i] << endl;
             ++i;
@@ -75,6 +75,37 @@ void write_data(string const &filename,
     output.close();
 
 }
+
+void dumb_track_calculation(list const &ta, list const &xa, list const &ya,
+        list const &tg, list const &zg, list &x, list &y, int start = 0) {
+    double x_cur = 0;
+    double y_cur = 0;
+    double alpha_cur = 0;
+    double vx_cur = 0;
+    double vy_cur = 0;
+    for (int i = 0; i < start; ++i) {
+        x.push_back(0);
+        y.push_back(0);
+    }
+    for (int i = start, j = 0; i < ta.size() - 1; ++i) {
+        while (j < zg.size() - 1 && tg[j + 1] < ta[i]) {
+            alpha_cur += zg[j] * (tg[j + 1] - tg[j]);
+            cout << alpha_cur << ' ' << j << ' ' << zg[j] << ' ' << tg[j + 1] << ' ' << tg[j] << endl;
+            ++j;
+        }
+        double dt = ta[i + 1] - ta[i];
+        double ax_cur = xa[i] * cos(alpha_cur) + ya[i] * sin(alpha_cur);
+        double ay_cur = -xa[i] * sin(alpha_cur) + ya[i] * cos(alpha_cur);
+        vx_cur += ax_cur * dt;
+        vy_cur += ay_cur * dt;
+        x_cur += vx_cur * dt;
+        y_cur += vy_cur * dt;
+        x.push_back(x_cur);
+        y.push_back(y_cur);
+    }
+
+}
+
 
 list ta, xa, ya, za;
 list tg, xg, yg, zg;
@@ -117,27 +148,30 @@ int main(int argc, char const *argv[]) {
     vector<int> block_starts = get_block_indices(xa_mean, ya_mean, za_mean, diff_threshold, false);
     for (int i = 0; i < block_starts.size(); ++i) {
         int start = block_starts[i];
-        int finish = i < block_starts.size() - 1 ? block_starts[i + 1] : (int)ta.size();
+        int finish = i < block_starts.size() - 1 ? block_starts[i + 1] : (int) ta.size();
         vector<vector<double> > rot_matrix = get_z_rotation_matrix(start, finish, xa_mean, ya_mean, za_mean);
         rotate_block(start, finish, xa_mean, ya_mean, za_mean, rot_matrix);
         int start2 = (int) (lower_bound(tg.begin(), tg.end(), ta[i]) - tg.begin());
         int finish2 = i < block_starts.size() - 1 ? (int) (lower_bound(tg.begin(), tg.end(), ta[i + 1]) - tg.begin()) :
-                ((int)tg.size());
+                ((int) tg.size());
         rotate_block(start2, finish2, xg, yg, zg, rot_matrix);
 
         vector<vector<double> > rot_matrix2 = get_plane_rotation_matrix(start, finish, ta, xa_mean, ya_mean, tg, zg);
         rotate_block(start, finish, xa_mean, ya_mean, za_mean, rot_matrix2);
         rotate_block(start2, finish2, xg, yg, zg, rot_matrix2);
-
     }
 
     write_data(output_filename, ta, xa, ya, za, tg, xg, yg, zg);
 
 #ifdef PYPLOT
-    plt.plot(ta, xa_mean);
-    plt.plot(ta, ya_mean);
-    plt.plot(ta, za_mean);
-    plt.plot(ta, zg);
+    list x, y;
+    dumb_track_calculation(ta, xa_mean, ya_mean, tg, zg, x, y, 1598); // 1598 to skip big pause
+    plt.plot(x, y);
+
+//    plt.plot(ta, xa_mean);
+//    plt.plot(ta, ya_mean);
+//    plt.plot(ta, za_mean);
+//    plt.plot(ta, zg);
 
     plt.show();
 #endif

@@ -1,5 +1,7 @@
 #include <algorithm>
 #include <vector>
+#include <assert.h>
+#include <iostream>
 
 #include "types.hpp"
 #include "utils.hpp"
@@ -129,6 +131,7 @@ vector<vector<double> > get_rotation_matrix(double nx, double ny, double nz, dou
 }
 
 vector<vector<double> > get_z_rotation_matrix(int start, int end, list const &x, list const &y, list const &z) {
+    assert(start < end);
     // for now, the mean vector is assumed to be pointing down
     // todo: maybe a better algorithm, for example quantize vectors and take the most appearing one
     double xx = 0, yy = 0, zz = 0;
@@ -141,9 +144,14 @@ vector<vector<double> > get_z_rotation_matrix(int start, int end, list const &x,
     yy /= end - start;
     zz /= end - start;
     double len = sqrt(sqr(xx) + sqr(yy) + sqr(zz));
+    double len2 = sqrt(sqr(xx) + sqr(yy));
 
-    double nx = yy / sqrt(sqr(xx) + sqr(yy));
-    double ny = -xx / sqrt(sqr(xx) + sqr(yy));
+    if (len < EPSILON || len2 < EPSILON) {
+        return get_rotation_matrix(0, 0, 1, 1, 0);
+    }
+
+    double nx = yy / len2;
+    double ny = -xx / len2;
     double nz = 0;
     double cos_phi = zz / len;
     double sin_phi = sqrt(1 - sqr(cos_phi));
@@ -153,6 +161,7 @@ vector<vector<double> > get_z_rotation_matrix(int start, int end, list const &x,
 
 vector<vector<double> > get_plane_rotation_matrix(int start, int end, list const &t, list const &x, list const &y,
         list const &tg, list const &zg) {
+    assert(start < end);
     //todo: fix problem: it is unknown whether the X axis will be pointing forward or backward
     double xx = 0, yy = 0;
     double c = 0;
@@ -165,9 +174,11 @@ vector<vector<double> > get_plane_rotation_matrix(int start, int end, list const
     xx /= c;
     yy /= c;
     double len = sqrt(sqr(xx) + sqr(yy));
+    if (len < EPSILON) {
+        return get_rotation_matrix(0, 0, 1, 1, 0);
+    }
     xx /= len;
     yy /= len;
-
     return get_rotation_matrix(0, 0, 1, -xx, -yy);
 }
 
