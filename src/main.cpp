@@ -12,64 +12,79 @@
 
 using namespace std;
 
-string next_word(istream &s, char delim) {
-    string str;
-    getline(s, str, delim);
-    return str;
+vector<vector<string>> read_table(string const & filename) {
+    vector<vector<string>> table;
+    ifstream input(filename);
+    string line;
+    int i = -1;
+    while (getline(input, line)) {
+        table.push_back(vector<string>());
+        ++i;
+        istringstream ss(line);
+        string token;
+        while (getline(ss, token, ';')) {
+            table[i].push_back(token);
+        }
+    }
+    return table;
 }
 
-void read_data(string const &filename, list &ta, list &xa, list &ya, list &za,
+void parse_data(vector<vector<string>> const & table, list &ta, list &xa, list &ya, list &za,
         list &tg, list &xg, list &yg, list &zg) {
-    ifstream input(filename.c_str());
-    string line;
-    bool first = true;
-    double offset = 0;
-    while (getline(input, line)) {
-        istringstream ss(line);
-        string type;
-        if (!getline(ss, type, ';')) {
+    for (int i = 0; i < table.size(); ++i) {
+        if (table[i].size() == 0) {
             continue;
         }
+        string type = table[i][0];
         if (type == "1") {
-            next_word(ss, ';');
-            double t = atof(next_word(ss, ';').c_str());
-            if (first) {
-                first = false;
-                offset = t;
-            }
-            t = (t - offset) / EXCEL_SECOND;
+            double t = atof(table[i][2].c_str());
             ta.push_back(t);
-            xa.push_back(atof(next_word(ss, ';').c_str()));
-            ya.push_back(atof(next_word(ss, ';').c_str()));
-            za.push_back(atof(next_word(ss, ';').c_str()));
+            xa.push_back(atof(table[i][3].c_str()));
+            ya.push_back(atof(table[i][4].c_str()));
+            za.push_back(atof(table[i][5].c_str()));
         } else if (type == "4") {
-            next_word(ss, ';');
-            double t = atof(next_word(ss, ';').c_str());
-            if (first) {
-                first = false;
-                offset = t;
-            }
-            t = (t - offset) / EXCEL_SECOND;
+            double t = atof(table[i][2].c_str());
             tg.push_back(t);
-            xg.push_back(atof(next_word(ss, ';').c_str()));
-            yg.push_back(atof(next_word(ss, ';').c_str()));
-            zg.push_back(atof(next_word(ss, ';').c_str()));
+            xg.push_back(atof(table[i][3].c_str()));
+            yg.push_back(atof(table[i][4].c_str()));
+            zg.push_back(atof(table[i][5].c_str()));
         }
     }
 }
 
-void write_data(string const &filename,
-        list const &ta, list const &xa, list const &ya, list const &za,
-        list const &tg, list const &xg, list const &yg, list const &zg) {
+void replace_data(vector<vector<string>> & table,
+        list const &ta, list const &xa,
+        list const &ya, list const &za,
+        list const &tg, list const &xg,
+        list const &yg, list const &zg) {
+    int ia = 0;
+    int ig = 0;
+    for (int i = 0; i < table.size(); ++i) {
+        if (table[i].size() == 0) {
+            continue;
+        }
+        string type = table[i][0];
+        if (type == "1") {
+            table[i][2] = to_string(ta[ia]);
+            table[i][3] = to_string(xa[ia]);
+            table[i][4] = to_string(ya[ia]);
+            table[i][5] = to_string(za[ia]);
+            ++ia;
+        } else if (type == "4") {
+            table[i][2] = to_string(tg[ig]);
+            table[i][3] = to_string(xg[ig]);
+            table[i][4] = to_string(yg[ig]);
+            table[i][5] = to_string(zg[ig]);
+            ++ig;
+        }
+    }
+}
+
+void write_data(string const & filename, vector<vector<string>> const & table) {
     ofstream output(filename);
-    output << setprecision(11);
-    for (int i = 0, j = 0; i < ta.size() || j < tg.size();) {
-        if (j == tg.size() || i < ta.size() && ta[i] <= tg[j]) {
-            output << "1;" << ta[i] << ';' << xa[i] << ';' << ya[i] << ';' << za[i] << endl;
-            ++i;
-        } else {
-            output << "4;" << tg[i] << ';' << xg[i] << ';' << yg[i] << ';' << zg[i] << endl;
-            ++j;
+    for (int i = 0; i < table.size(); ++i) {
+        for (int j = 0; j < table[i].size(); ++j) {
+            output << table[i][j] << ((j + 1 < table[i].size()) ? ';' : '\n');
         }
     }
     output.close();
@@ -103,15 +118,15 @@ void dumb_track_calculation(list const &ta, list const &xa, list const &ya,
         x.push_back(x_cur);
         y.push_back(y_cur);
     }
-
 }
 
+vector<vector<string>> table;
 
 list ta, xa, ya, za;
 list tg, xg, yg, zg;
 list xa_mean, ya_mean, za_mean;
 
-double radius = 4.0;
+double radius = 4.0 * EXCEL_SECOND;
 double diff_threshold = 1.0;
 double range_part = 0.5;
 string output_filename;
@@ -125,7 +140,9 @@ int main(int argc, char const *argv[]) {
         cerr << "No input file given" << endl;
         return -1;
     }
-    read_data(argv[1], ta, xa, ya, za, tg, xg, yg, zg);
+
+    table = read_table(argv[1]);
+    parse_data(table, ta, xa, ya, za, tg, xg, yg, zg);
     output_filename = "norm_" + string(argv[1]);
     for (int i = 2; i < argc; ++i) {
         if (!strncmp("radius=", argv[i], 7)) {
@@ -161,7 +178,8 @@ int main(int argc, char const *argv[]) {
         rotate_block(start2, finish2, xg, yg, zg, rot_matrix2);
     }
 
-    write_data(output_filename, ta, xa, ya, za, tg, xg, yg, zg);
+    replace_data(table, ta, xa, ya, za, tg, xg, yg, zg);
+    write_data(output_filename, table);
 
 #ifdef PYPLOT
     list x, y;
