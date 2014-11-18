@@ -178,7 +178,7 @@ int main(int argc, char const *argv[]) {
         rotate_block(start2, finish2, xg, yg, zg, rot_matrix2);
     }
 
-    replace_data(table, ta, xa, ya, za, tg, xg, yg, zg);
+    replace_data(table, ta, xa_mean, ya_mean, za_mean, tg, xg, yg, zg);
     write_data(output_filename, table);
 
 #ifdef PYPLOT
