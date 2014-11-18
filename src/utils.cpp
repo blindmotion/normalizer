@@ -102,6 +102,7 @@ double difference(int i, int j, list const &x, list const &y, list const &z) {
 
 vector<int> get_block_indices(list const &x, list const &y, list const &z, double threshold, bool adjacent) {
     vector<int> result;
+    result.push_back(0);
     int last = 0;
     for (int i = 1; i < x.size(); ++i) {
         double diff = difference(last, i, x, y, z);

@@ -126,8 +126,8 @@ list ta, xa, ya, za;
 list tg, xg, yg, zg;
 list xa_mean, ya_mean, za_mean;
 
-double radius = 4.0 * EXCEL_SECOND;
-double diff_threshold = 1.0;
+double radius = 0.5 * EXCEL_SECOND;
+double diff_threshold = 1000.0;
 double range_part = 0.5;
 string output_filename;
 
@@ -163,6 +163,7 @@ int main(int argc, char const *argv[]) {
     to_mean(ta, za, radius, range_part, za_mean);
 
     vector<int> block_starts = get_block_indices(xa_mean, ya_mean, za_mean, diff_threshold, false);
+    cout << block_starts.size() << " block(s) found" << endl;
     for (int i = 0; i < block_starts.size(); ++i) {
         int start = block_starts[i];
         int finish = i < block_starts.size() - 1 ? block_starts[i + 1] : (int) ta.size();
