@@ -37,7 +37,8 @@ double difference(int i, int j, list const &x, list const &y, list const &z);
  * New block is started if the current difference is bigger than the given threshold.
  * 'adjacent' parameter determines used algorithm for which points to use to count the current difference.
  */
-vector<int> get_block_indices(list const &x, list const &y, list const &z, double threshold = config::block_diff_thres,
+vector<int> get_block_indices(list const &t, list const &x, list const &y, list const &z,
+        double threshold = config::block_diff_thres, double time_thres = config::block_time_thres,
         bool adjacent = config::adjacent);
 
 /*

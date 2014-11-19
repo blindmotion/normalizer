@@ -188,7 +188,7 @@ int main(int argc, char const *const *argv) {
     to_mean(ta, ya, ya_mean);
     to_mean(ta, za, za_mean);
 
-    vector<int> block_starts = get_block_indices(xa_mean, ya_mean, za_mean);
+    vector<int> block_starts = get_block_indices(ta, xa_mean, ya_mean, za_mean);
     cout << block_starts.size() << " block(s) found" << endl;
     for (int i = 0; i < block_starts.size(); ++i) {
         int start = block_starts[i];

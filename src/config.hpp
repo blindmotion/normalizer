@@ -9,6 +9,13 @@ namespace config {
     extern double block_diff_thres;
 
     /*
+     * Threshold for detecting when the phone was moved inside the vehicle.
+     * Shows maximal difference between time of neighboring vectors of acceleration
+     * when they are considered from the same interval.
+     */
+    extern double block_time_thres;
+
+    /*
      * Type of the algorithm for detecting when the phone was moved inside the vehicle.
      */
     extern bool adjacent;

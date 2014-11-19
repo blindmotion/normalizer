@@ -100,13 +100,14 @@ double difference(int i, int j, list const &x, list const &y, list const &z) {
     return sqr(x[j] - x[i]) + sqr(y[j] - y[i]) + sqr(z[j] - z[i]);
 }
 
-vector<int> get_block_indices(list const &x, list const &y, list const &z, double threshold, bool adjacent) {
+vector<int> get_block_indices(list const &t, list const &x, list const &y, list const &z,
+        double threshold, double time_thres, bool adjacent) {
     vector<int> result;
     result.push_back(0);
     int last = 0;
     for (int i = 1; i < x.size(); ++i) {
         double diff = difference(last, i, x, y, z);
-        if (diff >= threshold) {
+        if (diff >= threshold || t[i] - t[i - 1] > time_thres) {
             result.push_back(i);
             last = i;
         } else if (adjacent) {
