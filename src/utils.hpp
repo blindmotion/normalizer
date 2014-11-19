@@ -51,7 +51,7 @@ vector<vector<double>> get_z_rotation_matrix(int start, int end, list const &x, 
  * Returns a rotation matrix which changes coordinates so that the X axis points forward (currently may point backward).
  */
 vector<vector<double>> get_plane_rotation_matrix(int start, int end, list const &t, list const &x, list const &y,
-        list const &tg, list const &zg);
+        list const &tg, list const &zg, list const &t_geo, list const &speed_geo, double speed_thres = config::speed_detection_thres);
 
 /*
  * Applies rotation to given vectors of coordinates.

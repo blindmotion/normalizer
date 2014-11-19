@@ -14,4 +14,6 @@ namespace config {
     double sm_range_part = 0.5;
 
     double z_range_part = 0.3;
+
+    double speed_detection_thres = 3.0 * EXCEL_SECOND;
 }

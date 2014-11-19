@@ -30,8 +30,10 @@ vector<vector<string>> read_table(string const &filename) {
     return table;
 }
 
-void parse_data(vector<vector<string>> const &table, list &ta, list &xa, list &ya, list &za,
-        list &tg, list &xg, list &yg, list &zg) {
+void parse_data(vector<vector<string>> const &table,
+        list &ta, list &xa, list &ya, list &za,
+        list &tg, list &xg, list &yg, list &zg,
+        list &t_geo, list &speed_geo) {
     for (int i = 0; i < table.size(); ++i) {
         if (table[i].size() == 0) {
             continue;
@@ -49,6 +51,9 @@ void parse_data(vector<vector<string>> const &table, list &ta, list &xa, list &y
             xg.push_back(atof(table[i][3].c_str()));
             yg.push_back(atof(table[i][4].c_str()));
             zg.push_back(atof(table[i][5].c_str()));
+        } else if (type == "geo") {
+            t_geo.push_back(atof(table[i][2].c_str()));
+            speed_geo.push_back(atof(table[i][9].c_str()));
         }
     }
 }
@@ -125,6 +130,7 @@ vector<vector<string>> table;
 
 list ta, xa, ya, za;
 list tg, xg, yg, zg;
+list t_geo, speed_geo;
 list xa_mean, ya_mean, za_mean;
 string output_filename;
 
@@ -132,7 +138,7 @@ string output_filename;
 PyPlot plt;
 #endif
 
-bool try_get_value(char const *arg, string const &key, double & result) {
+bool try_get_value(char const *arg, string const &key, double &result) {
     if (!strncmp((key + "=").c_str(), arg, key.length() + 1)) {
         result = atof(arg + (key.length() + 1));
         return true;
@@ -141,7 +147,7 @@ bool try_get_value(char const *arg, string const &key, double & result) {
     }
 }
 
-bool try_get_value(char const *arg, string const &key, string & result) {
+bool try_get_value(char const *arg, string const &key, string &result) {
     if (!strncmp((key + "=").c_str(), arg, key.length() + 1)) {
         result = arg + (key.length() + 1);
         return true;
@@ -151,22 +157,13 @@ bool try_get_value(char const *arg, string const &key, string & result) {
 }
 
 bool parse_arg(char const *arg) {
-    if (try_get_value("sm_radius", arg, config::sm_radius)) {
-        return true;
-    }
-    if (try_get_value("block_thresh", arg, config::block_diff_thres)) {
-        return true;
-    }
-    if (try_get_value("sm_part", arg, config::sm_range_part)) {
-        return true;
-    }
-    if (try_get_value("z_part", arg, config::z_range_part)) {
-        return true;
-    }
-    if (try_get_value("output", arg, output_filename)) {
-        return true;
-    }
-    return false;
+    return try_get_value("sm_radius", arg, config::sm_radius)
+            || try_get_value("block_thres", arg, config::block_diff_thres)
+            || try_get_value("time_thres", arg, config::block_time_thres)
+            || try_get_value("sm_part", arg, config::sm_range_part)
+            || try_get_value("z_part", arg, config::z_range_part)
+            || try_get_value("speed_thres", arg, config::speed_detection_thres)
+            || try_get_value("output", arg, output_filename);
 }
 
 int main(int argc, char const *const *argv) {
@@ -176,7 +173,7 @@ int main(int argc, char const *const *argv) {
     }
 
     table = read_table(argv[1]);
-    parse_data(table, ta, xa, ya, za, tg, xg, yg, zg);
+    parse_data(table, ta, xa, ya, za, tg, xg, yg, zg, t_geo, speed_geo);
     output_filename = "norm_" + string(argv[1]);
     for (int i = 2; i < argc; ++i) {
         if (!parse_arg(argv[i])) {
@@ -200,7 +197,8 @@ int main(int argc, char const *const *argv) {
                 ((int) tg.size());
         rotate_block(start2, finish2, xg, yg, zg, rot_matrix);
 
-        vector<vector<double>> rot_matrix2 = get_plane_rotation_matrix(start, finish, ta, xa_mean, ya_mean, tg, zg);
+        vector<vector<double>> rot_matrix2 = get_plane_rotation_matrix(start, finish, ta, xa_mean, ya_mean, tg, zg,
+                t_geo, speed_geo);
         rotate_block(start, finish, xa_mean, ya_mean, za_mean, rot_matrix2);
         rotate_block(start2, finish2, xg, yg, zg, rot_matrix2);
     }

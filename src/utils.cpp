@@ -144,8 +144,6 @@ bool operator <(Vector3d const & a, Vector3d const & b) {
 
 vector<vector<double>> get_z_rotation_matrix(int start, int end, list const &x, list const &y, list const &z, double part) {
     assert(start < end);
-    // for now, the mean vector is assumed to be pointing down (long and short vectors are not counted)
-    // todo: maybe a better algorithm, for example quantize vectors and take the most appearing one
     vector<Vector3d> acc;
     for (int i = start; i < end; ++i) {
         acc.push_back(Vector3d(x[i], y[i], z[i]));
@@ -184,15 +182,21 @@ vector<vector<double>> get_z_rotation_matrix(int start, int end, list const &x, 
 }
 
 vector<vector<double>> get_plane_rotation_matrix(int start, int end, list const &t, list const &x, list const &y,
-        list const &tg, list const &zg) {
+        list const &tg, list const &zg, list const &t_geo, list const &speed_geo, double speed_thres) {
     assert(start < end);
-    //todo: fix problem: it is unknown whether the X axis will be pointing forward or backward
     double xx = 0, yy = 0;
     double c = 0;
     for (int i = start; i < end; ++i) {
         double coeff = 1.0 / (1.0 + abs(zg[lower_bound(zg.begin(), zg.end(), t[i]) - zg.begin()]));
-        xx += x[i] * coeff;
-        yy += y[i] * coeff;
+        int speed_index = (int) (lower_bound(t_geo.begin(), t_geo.end(), t[i]) - t_geo.begin());
+        if (speed_index + 1 >= speed_geo.size() || t_geo[speed_index + 1] - t_geo[speed_index] > speed_thres ||
+                speed_geo[speed_index + 1] >= speed_geo[speed_index]) {
+            xx += x[i] * coeff;
+            yy += y[i] * coeff;
+        } else {
+            xx -= x[i] * coeff;
+            yy -= y[i] * coeff;
+        }
         c += coeff;
     }
     xx /= c;
@@ -203,7 +207,7 @@ vector<vector<double>> get_plane_rotation_matrix(int start, int end, list const 
     }
     xx /= len;
     yy /= len;
-    return get_rotation_matrix(0, 0, 1, -xx, -yy);
+    return get_rotation_matrix(0, 0, 1, xx, yy);
 }
 
 void rotate_block(int start, int end, list &x, list &y, list &z, vector<vector<double>> const &m) {

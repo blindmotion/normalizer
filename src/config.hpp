@@ -21,7 +21,7 @@ namespace config {
     extern bool adjacent;
 
     /*
-     * Radius in excel seconds, used in acceleration data smoothing.
+     * Radius in excel time, used in acceleration data smoothing.
      */
     extern double sm_radius;
 
@@ -35,4 +35,9 @@ namespace config {
      * very small and large ones will be thrown aside.
      */
     extern double z_range_part;
+
+    /*
+     * Sets maximal time length (in excel time) between two speed values for which speed derivative can be calculated.
+     */
+    extern double speed_detection_thres;
 }
