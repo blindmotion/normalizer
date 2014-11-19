@@ -11,7 +11,9 @@ Same as input.
 
 ## Command line arguments
 First argument is always an input filename. Other arguments are optional:
-* `radius=<rad>`
-* `threshold=<thres>`
-* `range=<range>`
-* `output=<name>` by default: `<name> = "norm_" + input_name`
+* `block_thresh=<thres>`
+* `sm_radius=<sm_rad>`
+* `sm_part=<sm_part>`
+* `z_part=<z_part>`
+* `output=<name>` by default: `<name> = "norm_" + input_name` (default doesn't assume that `input_name` can be a path to file)<br>
+Descriptions and default values of some constants are available in config.hpp file.
