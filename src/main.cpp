@@ -13,7 +13,7 @@
 
 using namespace std;
 
-vector<vector<string>> read_table(string const & filename) {
+vector<vector<string>> read_table(string const &filename) {
     vector<vector<string>> table;
     ifstream input(filename);
     string line;
@@ -30,7 +30,7 @@ vector<vector<string>> read_table(string const & filename) {
     return table;
 }
 
-void parse_data(vector<vector<string>> const & table, list &ta, list &xa, list &ya, list &za,
+void parse_data(vector<vector<string>> const &table, list &ta, list &xa, list &ya, list &za,
         list &tg, list &xg, list &yg, list &zg) {
     for (int i = 0; i < table.size(); ++i) {
         if (table[i].size() == 0) {
@@ -53,7 +53,7 @@ void parse_data(vector<vector<string>> const & table, list &ta, list &xa, list &
     }
 }
 
-void replace_data(vector<vector<string>> & table,
+void replace_data(vector<vector<string>> &table,
         list const &ta, list const &xa,
         list const &ya, list const &za,
         list const &tg, list const &xg,
@@ -81,7 +81,7 @@ void replace_data(vector<vector<string>> & table,
     }
 }
 
-void write_data(string const & filename, vector<vector<string>> const & table) {
+void write_data(string const &filename, vector<vector<string>> const &table) {
     ofstream output(filename);
     for (int i = 0; i < table.size(); ++i) {
         for (int j = 0; j < table[i].size(); ++j) {
@@ -126,12 +126,50 @@ vector<vector<string>> table;
 list ta, xa, ya, za;
 list tg, xg, yg, zg;
 list xa_mean, ya_mean, za_mean;
+string output_filename;
 
 #ifdef PYPLOT
 PyPlot plt;
 #endif
 
-int main(int argc, char const *argv[]) {
+bool try_get_value(char const *arg, string const &key, double & result) {
+    if (!strncmp((key + "=").c_str(), arg, key.length() + 1)) {
+        result = atof(arg + (key.length() + 1));
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool try_get_value(char const *arg, string const &key, string & result) {
+    if (!strncmp((key + "=").c_str(), arg, key.length() + 1)) {
+        result = arg + (key.length() + 1);
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool parse_arg(char const *arg) {
+    if (try_get_value("sm_radius", arg, config::sm_radius)) {
+        return true;
+    }
+    if (try_get_value("block_thresh", arg, config::block_diff_thres)) {
+        return true;
+    }
+    if (try_get_value("sm_part", arg, config::sm_range_part)) {
+        return true;
+    }
+    if (try_get_value("z_part", arg, config::z_range_part)) {
+        return true;
+    }
+    if (try_get_value("output", arg, output_filename)) {
+        return true;
+    }
+    return false;
+}
+
+int main(int argc, char const *const *argv) {
     if (argc <= 1) {
         cerr << "No input file given" << endl;
         return -1;
@@ -139,19 +177,9 @@ int main(int argc, char const *argv[]) {
 
     table = read_table(argv[1]);
     parse_data(table, ta, xa, ya, za, tg, xg, yg, zg);
-    string output_filename = "norm_" + string(argv[1]);
+    output_filename = "norm_" + string(argv[1]);
     for (int i = 2; i < argc; ++i) {
-        if (!strncmp("radius=", argv[i], 7)) {
-            config::sm_radius = atof(argv[i] + 7);
-        } else if (!strncmp("threshold=", argv[i], 10)) {
-            config::block_diff_thres = atof(argv[i] + 10);
-        } else if (!strncmp("range=", argv[i], 6)) {
-            config::sm_range_part = atof(argv[i] + 6);
-        } else if (!strncmp("z_part=", argv[i], 7)) {
-            config::z_range_part = atof(argv[i] + 7);
-        } else if (!strncmp("output=", argv[i], 7)) {
-            output_filename = argv[i] + 7;
-        } else {
+        if (!parse_arg(argv[i])) {
             cerr << "Unknown argument: " << argv[i] << endl;
         }
     }
