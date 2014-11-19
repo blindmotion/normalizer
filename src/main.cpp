@@ -177,7 +177,7 @@ int main(int argc, char const *const *argv) {
 
     table = read_table(argv[1]);
     parse_data(table, ta, xa, ya, za, tg, xg, yg, zg);
-    output_filename = "norm_" + string(argv[1]);
+    output_filename = "../norm_" + string(argv[1]);
     for (int i = 2; i < argc; ++i) {
         if (!parse_arg(argv[i])) {
             cerr << "Unknown argument: " << argv[i] << endl;
@@ -217,6 +217,15 @@ int main(int argc, char const *const *argv) {
     plt.plot(ta, ya_mean);
     plt.plot(ta, za_mean);
     plt.plot(ta, zg);
+    list vert;
+    vert.push_back(-10);
+    vert.push_back(10);
+    for (int i = 1; i < block_starts.size(); ++i) {
+        list hor;
+        hor.push_back(ta[block_starts[i]]);
+        hor.push_back(ta[block_starts[i]]);
+        plt.plot(hor, vert, ", c='black', lw=3");
+    }
 
     plt.show();
 #endif

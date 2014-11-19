@@ -3,7 +3,7 @@
 
 namespace config {
 
-    double block_diff_thres = 1000.0;
+    double block_diff_thres = 100.0;
 
     bool adjacent = false;
 

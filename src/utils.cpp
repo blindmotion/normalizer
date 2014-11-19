@@ -153,6 +153,7 @@ vector<vector<double>> get_z_rotation_matrix(int start, int end, list const &x, 
     double xx = 0, yy = 0, zz = 0;
     int start2 = (int) (acc.size() * (1 - part) * 0.5);
     int end2 = (int) (acc.size() * (1 + part) * 0.5);
+    assert(start2 < end2);
     for (int i = start2; i < end2; ++i) {
         xx += x[i];
         yy += y[i];
