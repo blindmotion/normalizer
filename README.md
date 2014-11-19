@@ -11,9 +11,10 @@ Same as input.
 
 ## Command line arguments
 First argument is always an input filename. Other arguments are optional:
-* `block_thresh=<thres>`
+* `block_thres=<bl_thres>`
+* `time_thres=<tm_thres>`
 * `sm_radius=<sm_rad>`
 * `sm_part=<sm_part>`
 * `z_part=<z_part>`
 * `output=<name>` by default: `<name> = "norm_" + input_name` (default doesn't assume that `input_name` can be a path to file)<br>
-Descriptions and default values of some constants are available in config.hpp file.
+Descriptions and default values of some constants are available in config.hpp and config.cpp files.
