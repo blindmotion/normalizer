@@ -155,9 +155,9 @@ vector<vector<double>> get_z_rotation_matrix(int start, int end, list const &x, 
     int end2 = (int) (acc.size() * (1 + part) * 0.5);
     assert(start2 < end2);
     for (int i = start2; i < end2; ++i) {
-        xx += x[i];
-        yy += y[i];
-        zz += z[i];
+        xx += acc[i].x;
+        yy += acc[i].y;
+        zz += acc[i].z;
     }
     xx /= end2 - start2;
     yy /= end2 - start2;
@@ -166,6 +166,7 @@ vector<vector<double>> get_z_rotation_matrix(int start, int end, list const &x, 
     double len2 = sqrt(sqr(xx) + sqr(yy));
 
     if (len < EPSILON || len2 < EPSILON) {
+        cerr << "Small len in get_z_rotation_matrix" << endl;
         return get_rotation_matrix(0, 0, 1, 1, 0);
     }
 

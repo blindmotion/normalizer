@@ -216,7 +216,9 @@ int main(int argc, char const *const *argv) {
     plt.plot(ta, xa_mean);
     plt.plot(ta, ya_mean);
     plt.plot(ta, za_mean);
-    plt.plot(ta, zg);
+//    plt.plot(ta, za);
+//    plt.plot(ta, zg);
+
     list vert;
     vert.push_back(-10);
     vert.push_back(10);

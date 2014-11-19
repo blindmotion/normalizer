@@ -11,5 +11,5 @@ namespace config {
 
     double sm_range_part = 0.5;
 
-    double z_range_part = 0.3;
+    double z_range_part = 0.5;
 }
