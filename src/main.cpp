@@ -9,6 +9,7 @@
 #include "types.hpp"
 #include "plot.hpp"
 #include "utils.hpp"
+#include "config.hpp"
 
 using namespace std;
 
@@ -126,12 +127,6 @@ list ta, xa, ya, za;
 list tg, xg, yg, zg;
 list xa_mean, ya_mean, za_mean;
 
-double radius = 0.5 * EXCEL_SECOND;
-double diff_threshold = 1000.0;
-double range_part = 0.5;
-double z_part = 0.3;
-string output_filename;
-
 #ifdef PYPLOT
 PyPlot plt;
 #endif
@@ -144,16 +139,16 @@ int main(int argc, char const *argv[]) {
 
     table = read_table(argv[1]);
     parse_data(table, ta, xa, ya, za, tg, xg, yg, zg);
-    output_filename = "norm_" + string(argv[1]);
+    string output_filename = "norm_" + string(argv[1]);
     for (int i = 2; i < argc; ++i) {
         if (!strncmp("radius=", argv[i], 7)) {
-            radius = atof(argv[i] + 7);
+            config::sm_radius = atof(argv[i] + 7);
         } else if (!strncmp("threshold=", argv[i], 10)) {
-            diff_threshold = atof(argv[i] + 10);
+            config::block_diff_thres = atof(argv[i] + 10);
         } else if (!strncmp("range=", argv[i], 6)) {
-            range_part = atof(argv[i] + 6);
+            config::sm_range_part = atof(argv[i] + 6);
         } else if (!strncmp("z_part=", argv[i], 7)) {
-            z_part = atof(argv[i] + 7);
+            config::z_range_part = atof(argv[i] + 7);
         } else if (!strncmp("output=", argv[i], 7)) {
             output_filename = argv[i] + 7;
         } else {
@@ -161,16 +156,16 @@ int main(int argc, char const *argv[]) {
         }
     }
 
-    to_mean(ta, xa, radius, range_part, xa_mean);
-    to_mean(ta, ya, radius, range_part, ya_mean);
-    to_mean(ta, za, radius, range_part, za_mean);
+    to_mean(ta, xa, xa_mean);
+    to_mean(ta, ya, ya_mean);
+    to_mean(ta, za, za_mean);
 
-    vector<int> block_starts = get_block_indices(xa_mean, ya_mean, za_mean, diff_threshold, false);
+    vector<int> block_starts = get_block_indices(xa_mean, ya_mean, za_mean);
     cout << block_starts.size() << " block(s) found" << endl;
     for (int i = 0; i < block_starts.size(); ++i) {
         int start = block_starts[i];
         int finish = i < block_starts.size() - 1 ? block_starts[i + 1] : (int) ta.size();
-        vector<vector<double>> rot_matrix = get_z_rotation_matrix(start, finish, xa_mean, ya_mean, za_mean, z_part);
+        vector<vector<double>> rot_matrix = get_z_rotation_matrix(start, finish, xa_mean, ya_mean, za_mean);
         rotate_block(start, finish, xa_mean, ya_mean, za_mean, rot_matrix);
         int start2 = (int) (lower_bound(tg.begin(), tg.end(), ta[i]) - tg.begin());
         int finish2 = i < block_starts.size() - 1 ? (int) (lower_bound(tg.begin(), tg.end(), ta[i + 1]) - tg.begin()) :

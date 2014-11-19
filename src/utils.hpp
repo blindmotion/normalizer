@@ -1,6 +1,7 @@
 #pragma once
 
 #include "types.hpp"
+#include "config.hpp"
 
 using namespace std;
 
@@ -27,7 +28,7 @@ double median(double time, double radius, list const &t, list const &x);
 /*
  * Mean function is applied to each element in array.
  */
-void to_mean(list const &t, list const &x, double radius, double percent, list &res);
+void to_mean(list const &t, list const &x, list &res, double radius = config::sm_radius, double percent = config::sm_range_part);
 
 double difference(int i, int j, list const &x, list const &y, list const &z);
 
@@ -36,12 +37,14 @@ double difference(int i, int j, list const &x, list const &y, list const &z);
  * New block is started if the current difference is bigger than the given threshold.
  * 'adjacent' parameter determines used algorithm for which points to use to count the current difference.
  */
-vector<int> get_block_indices(list const &x, list const &y, list const &z, double threshold, bool adjacent = false);
+vector<int> get_block_indices(list const &x, list const &y, list const &z, double threshold = config::block_diff_thres,
+        bool adjacent = config::adjacent);
 
 /*
  * Returns a rotation matrix which changes coordinates so that the Z axis points to the ground.
  */
-vector<vector<double>> get_z_rotation_matrix(int start, int end, list const &x, list const &y, list const &z, double part);
+vector<vector<double>> get_z_rotation_matrix(int start, int end, list const &x, list const &y, list const &z,
+        double part = config::z_range_part);
 
 /*
  * Returns a rotation matrix which changes coordinates so that the X axis points forward (currently may point backward).

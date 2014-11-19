@@ -90,7 +90,7 @@ double median(double time, double radius, list const &t, list const &x) {
     return simple_median(x2);
 }
 
-void to_mean(list const &t, list const &x, double radius, double percent, list &res) {
+void to_mean(list const &t, list const &x, list &res, double radius, double percent) {
     for (int i = 0; i < t.size(); ++i) {
         res.push_back(quantile_mean(t[i], radius, t, x, percent));
     }
