@@ -129,6 +129,7 @@ list xa_mean, ya_mean, za_mean;
 double radius = 0.5 * EXCEL_SECOND;
 double diff_threshold = 1000.0;
 double range_part = 0.5;
+double z_part = 0.3;
 string output_filename;
 
 #ifdef PYPLOT
@@ -151,6 +152,8 @@ int main(int argc, char const *argv[]) {
             diff_threshold = atof(argv[i] + 10);
         } else if (!strncmp("range=", argv[i], 6)) {
             range_part = atof(argv[i] + 6);
+        } else if (!strncmp("z_part=", argv[i], 7)) {
+            z_part = atof(argv[i] + 7);
         } else if (!strncmp("output=", argv[i], 7)) {
             output_filename = argv[i] + 7;
         } else {
@@ -167,14 +170,14 @@ int main(int argc, char const *argv[]) {
     for (int i = 0; i < block_starts.size(); ++i) {
         int start = block_starts[i];
         int finish = i < block_starts.size() - 1 ? block_starts[i + 1] : (int) ta.size();
-        vector<vector<double> > rot_matrix = get_z_rotation_matrix(start, finish, xa_mean, ya_mean, za_mean);
+        vector<vector<double>> rot_matrix = get_z_rotation_matrix(start, finish, xa_mean, ya_mean, za_mean, z_part);
         rotate_block(start, finish, xa_mean, ya_mean, za_mean, rot_matrix);
         int start2 = (int) (lower_bound(tg.begin(), tg.end(), ta[i]) - tg.begin());
         int finish2 = i < block_starts.size() - 1 ? (int) (lower_bound(tg.begin(), tg.end(), ta[i + 1]) - tg.begin()) :
                 ((int) tg.size());
         rotate_block(start2, finish2, xg, yg, zg, rot_matrix);
 
-        vector<vector<double> > rot_matrix2 = get_plane_rotation_matrix(start, finish, ta, xa_mean, ya_mean, tg, zg);
+        vector<vector<double>> rot_matrix2 = get_plane_rotation_matrix(start, finish, ta, xa_mean, ya_mean, tg, zg);
         rotate_block(start, finish, xa_mean, ya_mean, za_mean, rot_matrix2);
         rotate_block(start2, finish2, xg, yg, zg, rot_matrix2);
     }
@@ -183,14 +186,14 @@ int main(int argc, char const *argv[]) {
     write_data(output_filename, table);
 
 #ifdef PYPLOT
-    list x, y;
-    dumb_track_calculation(ta, xa_mean, ya_mean, tg, zg, x, y, 1598); // 1598 to skip big pause
-    plt.plot(x, y);
+//    list x, y;
+//    dumb_track_calculation(ta, xa_mean, ya_mean, tg, zg, x, y, 1598); // 1598 to skip big pause in 2014-09-28_SensorDatafile
+//    plt.plot(x, y);
 
-//    plt.plot(ta, xa_mean);
-//    plt.plot(ta, ya_mean);
-//    plt.plot(ta, za_mean);
-//    plt.plot(ta, zg);
+    plt.plot(ta, xa_mean);
+    plt.plot(ta, ya_mean);
+    plt.plot(ta, za_mean);
+    plt.plot(ta, zg);
 
     plt.show();
 #endif

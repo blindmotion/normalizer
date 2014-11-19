@@ -41,15 +41,15 @@ vector<int> get_block_indices(list const &x, list const &y, list const &z, doubl
 /*
  * Returns a rotation matrix which changes coordinates so that the Z axis points to the ground.
  */
-vector<vector<double> > get_z_rotation_matrix(int start, int end, list const &x, list const &y, list const &z);
+vector<vector<double>> get_z_rotation_matrix(int start, int end, list const &x, list const &y, list const &z, double part);
 
 /*
  * Returns a rotation matrix which changes coordinates so that the X axis points forward (currently may point backward).
  */
-vector<vector<double> > get_plane_rotation_matrix(int start, int end, list const &t, list const &x, list const &y,
+vector<vector<double>> get_plane_rotation_matrix(int start, int end, list const &t, list const &x, list const &y,
         list const &tg, list const &zg);
 
 /*
  * Applies rotation to given vectors of coordinates.
  */
-void rotate_block(int start, int end, list &x, list &y, list &z, vector<vector<double> > const &m);
+void rotate_block(int start, int end, list &x, list &y, list &z, vector<vector<double>> const &m);

@@ -117,8 +117,8 @@ vector<int> get_block_indices(list const &x, list const &y, list const &z, doubl
 
 }
 
-vector<vector<double> > get_rotation_matrix(double nx, double ny, double nz, double cos_phi, double sin_phi) {
-    vector<vector<double> > m(3, vector<double>(3));
+vector<vector<double>> get_rotation_matrix(double nx, double ny, double nz, double cos_phi, double sin_phi) {
+    vector<vector<double>> m(3, vector<double>(3));
     m[0][0] = cos_phi + (1 - cos_phi) * nx * nx;
     m[0][1] = (1 - cos_phi) * nx * ny - sin_phi * nz;
     m[0][2] = (1 - cos_phi) * nx * nz + sin_phi * ny;
@@ -131,19 +131,36 @@ vector<vector<double> > get_rotation_matrix(double nx, double ny, double nz, dou
     return m;
 }
 
-vector<vector<double> > get_z_rotation_matrix(int start, int end, list const &x, list const &y, list const &z) {
+struct Vector3d {
+    double x, y, z, len_squared;
+    Vector3d(double x, double y, double z) : x(x), y(y), z(z), len_squared(x * x + y * y + z * z) {
+    }
+};
+
+bool operator <(Vector3d const & a, Vector3d const & b) {
+    return a.len_squared < b.len_squared;
+}
+
+vector<vector<double>> get_z_rotation_matrix(int start, int end, list const &x, list const &y, list const &z, double part) {
     assert(start < end);
-    // for now, the mean vector is assumed to be pointing down
+    // for now, the mean vector is assumed to be pointing down (long and short vectors are not counted)
     // todo: maybe a better algorithm, for example quantize vectors and take the most appearing one
-    double xx = 0, yy = 0, zz = 0;
+    vector<Vector3d> acc;
     for (int i = start; i < end; ++i) {
+        acc.push_back(Vector3d(x[i], y[i], z[i]));
+    }
+    sort(acc.begin(), acc.end());
+    double xx = 0, yy = 0, zz = 0;
+    int start2 = (int) (acc.size() * (1 - part) * 0.5);
+    int end2 = (int) (acc.size() * (1 + part) * 0.5);
+    for (int i = start2; i < end2; ++i) {
         xx += x[i];
         yy += y[i];
         zz += z[i];
     }
-    xx /= end - start;
-    yy /= end - start;
-    zz /= end - start;
+    xx /= end2 - start2;
+    yy /= end2 - start2;
+    zz /= end2 - start2;
     double len = sqrt(sqr(xx) + sqr(yy) + sqr(zz));
     double len2 = sqrt(sqr(xx) + sqr(yy));
 
@@ -160,7 +177,7 @@ vector<vector<double> > get_z_rotation_matrix(int start, int end, list const &x,
     return get_rotation_matrix(nx, ny, nz, cos_phi, sin_phi);
 }
 
-vector<vector<double> > get_plane_rotation_matrix(int start, int end, list const &t, list const &x, list const &y,
+vector<vector<double>> get_plane_rotation_matrix(int start, int end, list const &t, list const &x, list const &y,
         list const &tg, list const &zg) {
     assert(start < end);
     //todo: fix problem: it is unknown whether the X axis will be pointing forward or backward
@@ -183,7 +200,7 @@ vector<vector<double> > get_plane_rotation_matrix(int start, int end, list const
     return get_rotation_matrix(0, 0, 1, -xx, -yy);
 }
 
-void rotate_block(int start, int end, list &x, list &y, list &z, vector<vector<double> > const &m) {
+void rotate_block(int start, int end, list &x, list &y, list &z, vector<vector<double>> const &m) {
     for (int i = start; i < end; ++i) {
         double x2 = m[0][0] * x[i] + m[0][1] * y[i] + m[0][2] * z[i];
         double y2 = m[1][0] * x[i] + m[1][1] * y[i] + m[1][2] * z[i];
