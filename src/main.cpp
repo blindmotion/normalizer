@@ -177,7 +177,7 @@ int main(int argc, char const *const *argv) {
 
     table = read_table(argv[1]);
     parse_data(table, ta, xa, ya, za, tg, xg, yg, zg);
-    output_filename = "../norm_" + string(argv[1]);
+    output_filename = "norm_" + string(argv[1]);
     for (int i = 2; i < argc; ++i) {
         if (!parse_arg(argv[i])) {
             cerr << "Unknown argument: " << argv[i] << endl;
@@ -195,8 +195,8 @@ int main(int argc, char const *const *argv) {
         int finish = i < block_starts.size() - 1 ? block_starts[i + 1] : (int) ta.size();
         vector<vector<double>> rot_matrix = get_z_rotation_matrix(start, finish, xa_mean, ya_mean, za_mean);
         rotate_block(start, finish, xa_mean, ya_mean, za_mean, rot_matrix);
-        int start2 = (int) (lower_bound(tg.begin(), tg.end(), ta[i]) - tg.begin());
-        int finish2 = i < block_starts.size() - 1 ? (int) (lower_bound(tg.begin(), tg.end(), ta[i + 1]) - tg.begin()) :
+        int start2 = (int) (lower_bound(tg.begin(), tg.end(), ta[block_starts[i]]) - tg.begin());
+        int finish2 = i < block_starts.size() - 1 ? (int) (lower_bound(tg.begin(), tg.end(), ta[block_starts[i + 1]]) - tg.begin()) :
                 ((int) tg.size());
         rotate_block(start2, finish2, xg, yg, zg, rot_matrix);
 
