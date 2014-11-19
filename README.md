@@ -16,5 +16,6 @@ First argument is always an input filename. Other arguments are optional:
 * `sm_radius=<sm_rad>`
 * `sm_part=<sm_part>`
 * `z_part=<z_part>`
+* `speed_thres=<sp_thres>`
 * `output=<name>` by default: `<name> = "norm_" + input_name` (default doesn't assume that `input_name` can be a path to file)<br>
 Descriptions and default values of some constants are available in config.hpp and config.cpp files.
