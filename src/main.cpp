@@ -201,9 +201,13 @@ int main(int argc, char const *const *argv) {
                 t_geo, speed_geo);
         rotate_block(start, finish, xa_mean, ya_mean, za_mean, rot_matrix2);
         rotate_block(start2, finish2, xg, yg, zg, rot_matrix2);
+
+        rotate_block(start, finish, xa, ya, za, rot_matrix);
+        rotate_block(start, finish, xa, ya, za, rot_matrix2);
     }
 
     replace_data(table, ta, xa_mean, ya_mean, za_mean, tg, xg, yg, zg);
+//    replace_data(table, ta, xa, ya, za, tg, xg, yg, zg);
     write_data(output_filename, table);
 
 #ifdef PYPLOT

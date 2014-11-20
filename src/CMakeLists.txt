@@ -1,9 +1,15 @@
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(SOURCE_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/plot.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/utils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/config.cpp
+    PARENT_SCOPE
+)
 
-# add_definitions(-DPYPLOT)
-
-set(SOURCE_FILES main.cpp plot.cpp utils.cpp config.cpp)
-
-set(HEADER_FILES plot.hpp types.hpp utils.hpp config.hpp)
-
-add_executable(Normalizer ${SOURCE_FILES} ${HEADER_FILES})
+set(HEADER_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/plot.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/types.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/utils.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/config.hpp
+    PARENT_SCOPE
+)
