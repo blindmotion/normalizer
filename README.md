@@ -11,11 +11,12 @@ Same as input.
 
 ## Command line arguments
 First argument is always an input filename. Other arguments are optional:
-* `block_thres=<bl_thres>`
-* `time_thres=<tm_thres>`
-* `sm_radius=<sm_rad>`
-* `sm_part=<sm_part>`
-* `z_part=<z_part>`
-* `speed_thres=<sp_thres>`
-* `output=<name>` by default: `<name> = "norm_" + input_name` (default doesn't assume that `input_name` can be a path to file)<br>
-Descriptions and default values of some constants are available in config.hpp and config.cpp files.
+* `-block_diff_thres <bl_thres>`
+* `-block_time_thres <tm_thres>`
+* `-sm_radius <sm_rad>`
+* `-sm_range_part <sm_part>`
+* `-z_range_part <z_part>`
+* `-speed_detection_thres <sp_thres>`
+* `-adjacent` & `-noadjacent`
+* `-output <name>` by default: `<name> = "norm_" + input_name` (default doesn't assume that `input_name` can be a path to file)<br>
+Descriptions and default values of constants are available in config.cpp file or by `-help` argument.
