@@ -1,3 +1,5 @@
+add_subdirectory(gflags)
+
 set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/plot.cpp

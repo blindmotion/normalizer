@@ -7,3 +7,5 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/src)
 add_executable(Normalizer ${SOURCE_FILES} ${HEADER_FILES})
+
+target_link_libraries(Normalizer gflags)

@@ -28,7 +28,7 @@ double median(double time, double radius, list const &t, list const &x);
 /*
  * Mean function is applied to each element in array.
  */
-void to_mean(list const &t, list const &x, list &res, double radius = config::sm_radius, double percent = config::sm_range_part);
+void to_mean(list const &t, list const &x, list &res, double radius = FLAGS_sm_radius, double percent = FLAGS_sm_range_part);
 
 double difference(int i, int j, list const &x, list const &y, list const &z);
 
@@ -38,20 +38,20 @@ double difference(int i, int j, list const &x, list const &y, list const &z);
  * 'adjacent' parameter determines used algorithm for which points to use to count the current difference.
  */
 vector<int> get_block_indices(list const &t, list const &x, list const &y, list const &z,
-        double threshold = config::block_diff_thres, double time_thres = config::block_time_thres,
-        bool adjacent = config::adjacent);
+        double threshold = FLAGS_block_diff_thres, double time_thres = FLAGS_block_time_thres,
+        bool adjacent = FLAGS_adjacent);
 
 /*
  * Returns a rotation matrix which changes coordinates so that the Z axis points to the ground.
  */
 vector<vector<double>> get_z_rotation_matrix(int start, int end, list const &x, list const &y, list const &z,
-        double part = config::z_range_part);
+        double part = FLAGS_z_range_part);
 
 /*
  * Returns a rotation matrix which changes coordinates so that the X axis points forward (currently may point backward).
  */
 vector<vector<double>> get_plane_rotation_matrix(int start, int end, list const &t, list const &x, list const &y,
-        list const &tg, list const &zg, list const &t_geo, list const &speed_geo, double speed_thres = config::speed_detection_thres);
+        list const &tg, list const &zg, list const &t_geo, list const &speed_geo, double speed_thres = FLAGS_speed_detection_thres);
 
 /*
  * Applies rotation to given vectors of coordinates.

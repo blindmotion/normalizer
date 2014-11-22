@@ -138,35 +138,9 @@ string output_filename;
 PyPlot plt;
 #endif
 
-bool try_get_value(char const *arg, string const &key, double &result) {
-    if (!strncmp((key + "=").c_str(), arg, key.length() + 1)) {
-        result = atof(arg + (key.length() + 1));
-        return true;
-    } else {
-        return false;
-    }
-}
-
-bool try_get_value(char const *arg, string const &key, string &result) {
-    if (!strncmp((key + "=").c_str(), arg, key.length() + 1)) {
-        result = arg + (key.length() + 1);
-        return true;
-    } else {
-        return false;
-    }
-}
-
-bool parse_arg(char const *arg) {
-    return try_get_value("sm_radius", arg, config::sm_radius)
-            || try_get_value("block_thres", arg, config::block_diff_thres)
-            || try_get_value("time_thres", arg, config::block_time_thres)
-            || try_get_value("sm_part", arg, config::sm_range_part)
-            || try_get_value("z_part", arg, config::z_range_part)
-            || try_get_value("speed_thres", arg, config::speed_detection_thres)
-            || try_get_value("output", arg, output_filename);
-}
-
-int main(int argc, char const *const *argv) {
+int main(int argc, char **argv) {
+    google::SetUsageMessage("Program normalizes sensors values as recording device is always in the same orientation");
+    google::ParseCommandLineFlags(&argc, &argv, true);
     if (argc <= 1) {
         cerr << "No input file given" << endl;
         return -1;
@@ -174,12 +148,7 @@ int main(int argc, char const *const *argv) {
 
     table = read_table(argv[1]);
     parse_data(table, ta, xa, ya, za, tg, xg, yg, zg, t_geo, speed_geo);
-    output_filename = "norm_" + string(argv[1]);
-    for (int i = 2; i < argc; ++i) {
-        if (!parse_arg(argv[i])) {
-            cerr << "Unknown argument: " << argv[i] << endl;
-        }
-    }
+    output_filename = FLAGS_output.length() > 0 ? FLAGS_output : "norm_" + string(argv[1]);
 
     to_mean(ta, xa, xa_mean);
     to_mean(ta, ya, ya_mean);
