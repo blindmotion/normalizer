@@ -19,4 +19,4 @@ First argument is always an input filename. Other arguments are optional:
 * `-speed_detection_thres <sp_thres>`
 * `-adjacent` & `-noadjacent`
 * `-output <name>` by default: `<name> = "norm_" + input_name` (default doesn't assume that `input_name` can be a path to file)<br>
-Descriptions and default values of constants are available in config.cpp file or by `-help` argument.
+Descriptions and default values of arguments are available in config.cpp file or by `-help` argument.
