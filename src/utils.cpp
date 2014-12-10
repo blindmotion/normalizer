@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2014, Blind Motion Project 
+ * All rights reserved.
+ */
+
 #include <algorithm>
 #include <vector>
 #include <assert.h>
